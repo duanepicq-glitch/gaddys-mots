@@ -32,6 +32,15 @@ input:focus,select:focus{outline:2px solid var(--acc);border-color:transparent}
 .roles{display:flex;gap:6px;justify-content:center;align-items:center;margin:8px 0 6px;font-size:13px;color:var(--mut);font-weight:700;flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:#0d1016;color:#ddd;border-radius:99px;padding:5px 12px;cursor:pointer;font:inherit;font-weight:700}
 .chip.on{background:var(--acc);color:#1b1b1b;border-color:var(--acc)}
+.skinbar{margin:10px 0 4px;font-size:13px;color:var(--mut);font-weight:700}
+.skins{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.skin{border:2px solid transparent;border-radius:12px;padding:0;cursor:pointer;background:#0d1016;font:inherit;color:#fff;overflow:hidden}
+.skin i{display:flex;align-items:center;justify-content:center;height:46px;font-style:normal;font-family:Bungee,Impact,sans-serif;font-size:15px;background:linear-gradient(180deg,var(--a) 0 62%,var(--b) 62% 100%);color:var(--t);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.skin i b{background:var(--p);padding:1px 6px;border-radius:5px;font-weight:400}
+.skin span{display:block;font-size:11px;font-weight:900;padding:4px 2px}
+.skin.on{border-color:var(--acc);box-shadow:0 0 0 2px rgba(255,183,3,.35)}
+#shakeT{font-size:11px;color:#9fd3ff;letter-spacing:.5px;margin-top:2px}
+#shakeT:empty{display:none}
 #friendsPanel{margin-top:12px;padding:14px;border:1px dashed var(--line);border-radius:14px}
 .or{color:var(--mut);font-size:12px;margin:10px 0 2px;font-weight:700}
 .status{min-height:20px;color:#ffd166;font-weight:700;font-size:14px;margin:10px 0 0}
@@ -110,13 +119,21 @@ kbd{background:#2b313c;border-radius:5px;padding:1px 6px;font-family:inherit;fon
 <div id="menu" class="screen">
   <div class="card">
     <h1 class="logo">GADDY'S<span>MOTS</span></h1>
-    <p class="tag">Prop Hunt au bureau · 10 cacheurs contre 1 chasseur</p>
+    <p class="tag">Prop Hunt au bureau · 10 cacheurs contre 2 chasseurs</p>
     <label class="name">Ton pseudo<input id="nameInput" maxlength="14" autocomplete="off"></label>
     <button id="btnPlay" class="btn big">JOUER</button>
     <div class="roles">Rôle :
       <button class="chip on" data-role="random">Aléatoire</button>
       <button class="chip" data-role="hider">Cacheur</button>
       <button class="chip" data-role="hunter">Chasseur</button>
+    </div>
+    <div class="skinbar">Skin du chasseur
+      <div class="skins" id="skins">
+        <button class="skin" data-skin="classic" style="--a:#c0392b;--b:#2c3e50;--t:#f1c40f;--p:transparent"><i>★</i><span>Classique</span></button>
+        <button class="skin" data-skin="six7" style="--a:#2f6fde;--b:#173a7a;--t:#fff;--p:#173a7a"><i><b>6-7</b></i><span>6-7</span></button>
+        <button class="skin" data-skin="prout" style="--a:#7a4a22;--b:#4b2c12;--t:#f3dfbf;--p:#4b2c12"><i><b>PROUT</b></i><span>Prout</span></button>
+        <button class="skin" data-skin="hamra" style="--a:#d31a1a;--b:#111;--t:#e01b1b;--p:#111"><i><b>HAMRA</b></i><span>HAMRA</span></button>
+      </div>
     </div>
     <button id="btnFriends" class="btn sec">JOUER ENTRE AMIS</button>
     <div id="friendsPanel" hidden>
@@ -132,7 +149,8 @@ kbd{background:#2b313c;border-radius:5px;padding:1px 6px;font-family:inherit;fon
         <li><b>Cacheur</b> : vise un objet et appuie sur <kbd>E</kbd> pour te transformer. <kbd>F</kbd> verrouille ta rotation (la <b>molette</b> te fait tourner). <kbd>T</kbd> : provocation sonore.</li>
         <li><b>Chasseur</b> : <kbd>Clic</kbd> pour tirer, <kbd>R</kbd> pour recharger. Tirer sur un vrai meuble te coûte des PV !</li>
         <li><kbd>Tab</kbd> : liste des joueurs · <kbd>Échap</kbd> : pause</li>
-        <li>Les cacheurs ont 30 s pour se cacher, puis le chasseur a 4 min pour tous les trouver. Toutes les 45 s environ, chaque cacheur fait un bruit…</li>
+        <li>Les cacheurs ont 30 s pour se cacher, puis les 2 chasseurs ont 4 min pour tous les trouver. Toutes les 45 s, <b>tous les cacheurs tremblent</b> pendant 1 s et font un petit bruit !</li>
+        <li>Les vitres bloquent le passage mais pas la vue (ni les balles).</li>
       </ul>
     </details>
     <div class="sens">Sensibilité souris <input id="sens" type="range" min="0.6" max="4" step="0.1" value="1.6"></div>
@@ -144,10 +162,10 @@ kbd{background:#2b313c;border-radius:5px;padding:1px 6px;font-family:inherit;fon
   <div class="card">
     <h2 class="title2">Salon</h2>
     <div class="codebox"><span>CODE</span><b id="lobbyCode">-----</b><button id="btnCopy" class="mini">Copier</button></div>
-    <p class="mut">Donne ce code à tes amis (max 11 joueurs). Les places libres seront remplies par des bots.</p>
+    <p class="mut">Donne ce code à tes amis (max 12 joueurs). Les places libres seront remplies par des bots.</p>
     <ul id="playerList"></ul>
     <div id="hostCtl">
-      <label>Qui sera le chasseur ?<select id="hunterSel"></select></label>
+      <div class="row"><label>Chasseur 1<select id="hunterSel"></select></label><label>Chasseur 2<select id="hunterSel2"></select></label></div>
       <button id="btnStart" class="btn">LANCER LA PARTIE</button>
     </div>
     <p id="lobbyWait" class="mut">En attente du lancement par l’hôte…</p>
@@ -157,7 +175,7 @@ kbd{background:#2b313c;border-radius:5px;padding:1px 6px;font-family:inherit;fon
 
 <!-- HUD -->
 <div id="hud" hidden>
-  <div id="topbar"><div id="phase"></div><div id="timer"></div></div>
+  <div id="topbar"><div id="phase"></div><div id="timer"></div><div id="shakeT"></div></div>
   <div id="roleBadge"></div>
   <div id="hidersLeft"></div>
   <div id="killfeed"></div>
@@ -169,7 +187,7 @@ kbd{background:#2b313c;border-radius:5px;padding:1px 6px;font-family:inherit;fon
   <div id="ammo"></div>
   <div id="announce"></div>
   <div id="dmg"></div>
-  <div id="blind" hidden><div>Les cacheurs se cachent…</div><div id="blindT">30</div><p>Tu es le chasseur. Prépare-toi !</p></div>
+  <div id="blind" hidden><div>Les cacheurs se cachent…</div><div id="blindT">30</div><p>Tu es chasseur, avec un coéquipier. Prépare-toi !</p></div>
   <div id="board" hidden></div>
 </div>
 
@@ -205,12 +223,13 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
    CONSTANTES
    ============================================================ */
 const HIDE_TIME = 30, HUNT_TIME = 240, END_TIME = 9;
-const NUM_HIDERS = 10, MAX_PLAYERS = 11;
+const NUM_HIDERS = 10, NUM_HUNTERS = 2, MAX_PLAYERS = 12, SHAKE_EVERY = 45;
 const WALL_H = 3.2, STEP = 0.36, GRAV = 20;
 const DMG = 20, PEN = 3, HEAL = 4, MAG = 30, RELOAD = 1.8;
 const PEER_PREFIX = 'gaddysmots-v1-';
 const BOT_NAMES = ['Gérard','Sylvie','Kévin','Martine','Patrick','Nathalie','Jean-Mi','Brigitte','Thierry','Chantal','Didier'];
 const HUNTER_SPAWN = { x: -2, z: 18.4 };
+const HUNTER_SPAWNS = [{ x: -3.2, z: 18.4 }, { x: -0.8, z: 18.4 }];
 const V3 = THREE.Vector3;
 
 const $ = id => document.getElementById(id);
@@ -360,6 +379,37 @@ const PROPS = {
       for(const y of [0.1,0.6,1.1,1.6,1.97]){ bx(g,1.2,0.025,0.5,0,y,0,0x9aa0a6); if(y>1.9) continue;
         let x=-0.55; while(x<0.45){ const w=0.2+r()*0.25, h=0.15+r()*0.25; if(r()<0.25){ x+=w; continue; }
           bx(g,Math.min(w,0.55-x),h,0.35+r()*0.1,x+Math.min(w,0.55-x)/2,y+0.025,0,r()<0.7?0xc19a6b:0x2a5db0); x+=w+0.03; } } }},
+  locker:{name:'Casier',w:0.5,h:1.85,d:0.5,v:[0x6c7a89,0x2e86c1,0xb03a2e,0x27ae60],
+    build(g,c){ bx(g,0.5,1.85,0.5,0,0,0,c); for(let i=0;i<5;i++) bx(g,0.3,0.015,0.01,0,1.45+i*0.06,0.252,DARK);
+      bx(g,0.03,0.14,0.03,0.17,0.95,0.26,0xcccccc); bx(g,0.12,0.06,0.006,0,1.25,0.253,0xf5f5f5); }},
+  beanbag:{name:'Pouf',w:0.8,h:0.62,d:0.8,v:[0xe74c3c,0x27ae60,0x8e44ad,0xf39c12],
+    build(g,c){ const a=sp(g,1,0,0.27,0,c); a.scale.set(0.42,0.28,0.42); const b=sp(g,1,0,0.42,-0.1,lighten(c,0.12)); b.scale.set(0.32,0.2,0.26); }},
+  cart:{name:'Chariot de ménage',w:0.95,h:1.05,d:0.5,
+    build(g){ bx(g,0.9,0.03,0.48,0,0.08,0,0x3a3a3a); bx(g,0.9,0.03,0.48,0,0.6,0,0x3a3a3a);
+      for(const sx of [-1,1]) for(const sz of [-1,1]){ bx(g,0.03,0.6,0.03,sx*0.43,0.08,sz*0.22,0x777777); sp(g,0.04,sx*0.4,0.04,sz*0.2,DARK); }
+      cy(g,0.17,0.14,0.32,-0.2,0.11,0,0xf2c200); bx(g,0.3,0.45,0.36,0.25,0.11,0,0x1d1d1d); bx(g,0.2,0.18,0.14,-0.25,0.63,0,0x2a8fd6); cy(g,0.05,0.05,0.22,0.1,0.63,0,0xe8e8e8);
+      cy(g,0.012,0.012,0.45,0.43,0.6,0,0x777777); }},
+  aquarium:{name:'Aquarium',w:1.2,h:1.3,d:0.5,
+    build(g){ bx(g,1.2,0.75,0.5,0,0,0,DWOOD); bx(g,1.2,0.5,0.46,0,0.75,0,0x5fb4d9,true); bx(g,1.22,0.05,0.48,0,1.25,0,0x222222); bx(g,1.18,0.06,0.44,0,0.75,0,0xd9c27a);
+      for(const [x,y,c] of [[-0.3,0.95,0xff7b1c],[0.15,1.05,0xffd000],[0.35,0.9,0xff7b1c],[-0.05,0.85,0xff4d6d]]) bx(g,0.08,0.04,0.02,x,y,0.235,c,true);
+      cy(g,0.02,0.02,0.3,-0.45,0.8,0,0x2f8a3a); cy(g,0.02,0.02,0.22,0.45,0.8,0.05,0x2f8a3a); }},
+  safe:{name:'Coffre-fort',w:0.6,h:0.75,d:0.6,v:[0x3b3f45,0x6b6f75],
+    build(g,c){ bx(g,0.6,0.75,0.6,0,0,0,c); bx(g,0.5,0.62,0.02,0,0.06,0.3,lighten(c,0.1)); const d=cy(g,0.07,0.07,0.04,0,0,0,0xc9a227); d.rotation.x=Math.PI/2; d.position.set(-0.08,0.42,0.33);
+      bx(g,0.03,0.16,0.04,0.17,0.3,0.32,0xc9a227); }},
+  papers:{name:'Pile de papiers',w:0.45,h:0.5,d:0.35,
+    build(g){ let y=0; for(let i=0;i<5;i++){ const h=0.08+((i*37)%5)*0.01; const m=bx(g,0.42,h,0.3,(i%2?0.012:-0.01),y,(i%3-1)*0.01,i%2?0xf7f7f2:0xeeeee6); m.rotation.y=(i-2)*0.04; y+=h; } bx(g,0.12,0.004,0.2,0.08,y,0,0xffe066); }},
+  globe:{name:'Globe',w:0.45,h:1.0,d:0.45,
+    build(g){ cy(g,0.2,0.22,0.04,0,0,0,DWOOD); cy(g,0.025,0.025,0.6,0,0.04,0,DWOOD); sp(g,0.22,0,0.82,0,0x2e86c1); sp(g,0.1,0.13,0.88,0.08,0x2f9a4a); sp(g,0.08,-0.12,0.76,-0.1,0x2f9a4a); }},
+  babyfoot:{name:'Baby-foot',w:1.4,h:0.95,d:0.8,
+    build(g){ for(const sx of [-1,1]) for(const sz of [-1,1]) bx(g,0.07,0.65,0.07,sx*0.55,0,sz*0.3,DARK);
+      bx(g,1.3,0.22,0.7,0,0.65,0,DWOOD); bx(g,1.2,0.02,0.6,0,0.8,0,0x2f9a4a); bx(g,0.01,0.005,0.6,0,0.821,0,0xffffff);
+      for(let i=0;i<6;i++){ const x=-0.5+i*0.2; const r=cy(g,0.012,0.012,1.0,0,0,0,0xbbbbbb); r.rotation.x=Math.PI/2; r.position.set(x,0.9,0);
+        for(const z of [-0.15,0.15]) bx(g,0.04,0.1,0.04,x,0.84,z,i%2?0xc0392b:0x2e86c1); }}},
+  fan:{name:'Ventilateur',w:0.45,h:1.3,d:0.35,
+    build(g){ cy(g,0.18,0.18,0.03,0,0,0,0xdddddd); cy(g,0.02,0.02,1.0,0,0.03,0,0xbbbbbb); const h=cy(g,0.2,0.2,0.1,0,0,0,0xeeeeee); h.rotation.x=Math.PI/2; h.position.set(0,1.1,0); sp(g,0.05,0,1.1,0.05,0x8ad0ff); }},
+  palm:{name:'Palmier',w:0.8,h:2.0,d:0.8,
+    build(g){ cy(g,0.26,0.2,0.45,0,0,0,0x8e5a3c); cy(g,0.05,0.07,1.2,0,0.45,0,0x8b6a43);
+      for(let i=0;i<7;i++){ const m=bx(g,0.75,0.025,0.16,0,0,0,i%2?0x3f8f3a:0x2f7a32); m.position.set(Math.cos(i*0.9)*0.3,1.62,Math.sin(i*0.9)*0.3); m.rotation.set(0,-i*0.9,-0.35); } }},
   keyboard:{name:'Clavier',w:0.45,h:0.03,d:0.15,cos:true,
     build(g){ bx(g,0.44,0.02,0.14,0,0,0,0x2a2a2a); bx(g,0.06,0.025,0.1,0.32,0,0.02,0x2a2a2a); }},
 };
@@ -377,15 +427,31 @@ function addWall(x0,x1,z0,z1,h=WALL_H,color=WALLC,y0=0){
   bx(staticRoot,x1-x0,h,z1-z0,(x0+x1)/2,y0,(z0+z1)/2,color);
   boxes.push({x0,x1,y0,y1:y0+h,z0,z1,kind:'wall'});
 }
-function wallX(z,x0,x1,gaps=[]){
-  let cur=x0; const gs=gaps.map(([c,w])=>[c-w/2,c+w/2]).sort((a,b)=>a[0]-b[0]);
-  for(const [a,b] of gs){ if(a>cur) addWall(cur,a,z-0.1,z+0.1); addWall(a,b,z-0.1,z+0.1,WALL_H-2.3,WALLC,2.3); cur=b; }
-  if(x1>cur) addWall(cur,x1,z-0.1,z+0.1);
+// vitre : bloque le passage, mais pas la vue ni les balles
+const GLASS_MAT=new THREE.MeshLambertMaterial({color:0xa8dcf0,transparent:true,opacity:0.22,depthWrite:false});
+const FRAME=0x50565e;
+function addGlass(x0,x1,z0,z1,sill=0){
+  if(sill>0) addWall(x0,x1,z0,z1,sill);
+  const along=x1-x0>z1-z0, L=along?x1-x0:z1-z0, h=WALL_H-sill;
+  const m=new THREE.Mesh(GEO.box,GLASS_MAT); m.scale.set(x1-x0,h,z1-z0); m.position.set((x0+x1)/2,sill+h/2,(z0+z1)/2); staticRoot.add(m);
+  boxes.push({x0,x1,y0:sill,y1:WALL_H,z0,z1,kind:'glass'});
+  const n=Math.max(1,Math.round(L/1.5)), t=0.06, th=0.04;
+  for(let i=0;i<=n;i++){ const k=i/n;
+    if(along) bx(staticRoot,t,h,(z1-z0)+th,x0+(x1-x0)*k,sill,(z0+z1)/2,FRAME); else bx(staticRoot,(x1-x0)+th,h,t,(x0+x1)/2,sill,z0+(z1-z0)*k,FRAME); }
+  bx(staticRoot,(x1-x0)+(along?0:0.04),0.06,(z1-z0)+(along?0.04:0),(x0+x1)/2,sill,(z0+z1)/2,FRAME);
+  bx(staticRoot,(x1-x0)+(along?0:0.04),0.06,(z1-z0)+(along?0.04:0),(x0+x1)/2,2.25,(z0+z1)/2,FRAME);
 }
-function wallZ(x,z0,z1,gaps=[]){
+function wallX(z,x0,x1,gaps=[],glass=-1){
+  let cur=x0; const gs=gaps.map(([c,w])=>[c-w/2,c+w/2]).sort((a,b)=>a[0]-b[0]);
+  const seg=(a,b)=>glass>=0?addGlass(a,b,z-0.1,z+0.1,glass):addWall(a,b,z-0.1,z+0.1);
+  for(const [a,b] of gs){ if(a>cur) seg(cur,a); addWall(a,b,z-0.1,z+0.1,WALL_H-2.3,WALLC,2.3); cur=b; }
+  if(x1>cur) seg(cur,x1);
+}
+function wallZ(x,z0,z1,gaps=[],glass=-1){
   let cur=z0; const gs=gaps.map(([c,w])=>[c-w/2,c+w/2]).sort((a,b)=>a[0]-b[0]);
-  for(const [a,b] of gs){ if(a>cur) addWall(x-0.1,x+0.1,cur,a); addWall(x-0.1,x+0.1,a,b,WALL_H-2.3,WALLC,2.3); cur=b; }
-  if(z1>cur) addWall(x-0.1,x+0.1,cur,z1);
+  const seg=(a,b)=>glass>=0?addGlass(x-0.1,x+0.1,a,b,glass):addWall(x-0.1,x+0.1,a,b);
+  for(const [a,b] of gs){ if(a>cur) seg(cur,a); addWall(x-0.1,x+0.1,a,b,WALL_H-2.3,WALLC,2.3); cur=b; }
+  if(z1>cur) seg(cur,z1);
 }
 function rotBox(c,x,y,z,rot){
   const cs=Math.cos(rot), sn=Math.sin(rot); let a=Infinity,b=-Infinity,e=Infinity,f=-Infinity;
@@ -444,12 +510,20 @@ function buildMap(){
   addWall(-30.1,30.1,-20.1,-19.9,WALL_H,OUT); addWall(-30.1,30.1,19.9,20.1,WALL_H,OUT);
   addWall(-30.1,-29.9,-20,20,WALL_H,OUT); addWall(29.9,30.1,-20,20,WALL_H,OUT);
   // cloisons
-  wallX(-12,-30,30,[[-24,1.6],[-12,1.6],[0,1.6],[12,1.6],[24,1.6]]);
+  wallX(-12,-30,-6,[[-24,1.6],[-12,1.6]]); wallX(-12,-6,18,[[0,1.6],[12,1.6]],0.9); wallX(-12,18,30,[[24,1.6]]);
   wallZ(-18,-20,-12); wallZ(-6,-20,-12); wallZ(18,-20,-12);
-  wallX(12,-30,30,[[-21,2],[-2,10],[13,1.6],[24,1.6]]);
+  wallX(12,-30,18,[[-21,2],[-2,10],[13,1.6]]); wallX(12,18,30,[[24,1.6]],0.9);
   wallZ(-12,12,20); wallZ(8,12,20); wallZ(18,12,20);
   // poteaux
   addWall(-17.8,-17.2,-0.8,-0.2,WALL_H,0xd8d2c4); addWall(17.2,17.8,-0.8,-0.2,WALL_H,0xd8d2c4);
+  // centre : salon vitré + cloisons
+  wallX(-5.5,-6,6,[[0,1.8]],0); wallX(5.5,-6,6,[[0,1.8]],0); wallZ(-6,-5.5,5.5,[[0,1.8]],0); wallZ(6,-5.5,5.5,[[0,1.8]],0);
+  wallX(-7.5,-4,4); wallX(7.5,-4,4);
+  wallZ(-8.5,-10.5,-6.5); wallZ(8.5,-10.5,-6.5); wallZ(-8.5,6.5,10.5); wallZ(8.5,6.5,10.5);
+  wallZ(-18,-9.5,-3.5); wallZ(18,-9.5,-3.5); wallZ(-18,2.5,9); wallZ(18,2.5,9);
+  wallX(-0.5,-25,-21); wallX(-0.5,-15,-11); wallX(-0.5,11,15); wallX(-0.5,21,25);
+  // vitres entre les open spaces latéraux
+  wallX(-0.5,-29.9,-26,[],0.9); wallX(-0.5,26,29.9,[],0.9);
   // fenêtres & déco murale
   for(const x of [-27,-21,-15,-9,-3,3,9,15,21,27]) bx(staticRoot,1.8,1.3,0.02,x,1.0,-19.88,0x9cc9e8,true);
   for(const z of [-8,-5.5,5.5,8]){ bx(staticRoot,0.02,1.3,1.8,-29.88,1.0,z,0x9cc9e8,true); bx(staticRoot,0.02,1.3,1.8,29.88,1.0,z,0x9cc9e8,true); }
@@ -468,6 +542,7 @@ function buildMap(){
     P('plant',x0+0.5,-12.6,0,0,seed); P('coatrack',x1-0.5,-12.7,0,0,seed);
     P('bin',cx-1.9,-19.6,0,0,seed); P('box',cx+1.5,-19.55,0.1,0,seed); P('lamp',x1-0.5,-16,0,0,0);
     P('armchair',x1-0.7,-14.4,F_W,0,seed); P('smallplant',cx+2.85,-19.6,0,0.76,seed);
+    P('papers',cx+0.4,-19.6,0.2); P('fan',cx-0.9,-19.6,F_S); P('beanbag',x0+1.6,-13.2,R()*3,0,seed); P('locker',x1-0.4,-18.2,F_W,0,seed);
   }
   office(-30,-18,1); office(-18,-6,2);
 
@@ -550,7 +625,25 @@ function buildMap(){
   P('coatrack',-27.5,-11.5,0,0,0); P('lamp',27.5,-11.5); P('extinguisher',-8.5,-11.8); P('extinguisher',8.5,-11.8);
   P('cabinet',-27,11.6,F_N,0,0); P('bookshelf',-16,11.7,F_N,0,11); P('cooler',-9.5,11.7); P('printer',6,11.57,F_N,0,0); P('bookshelf',17.5,11.7,F_N,0,12);
   P('box',19.8,11.55,0); P('box',20.4,11.55,0,0,1); P('box',20.1,11.55,0.2,0.45,2); P('wetsign',9.5,10.5,0.8);
-  P('extinguisher',-17.5,0); P('extinguisher',17.5,0); P('whiteboard',10,-9,F_S+0.3); P('box',-8.5,9.5,0.3,0,1); P('bin',-6.5,-9.5,0,0,1);
+  P('extinguisher',-17.5,0); P('extinguisher',17.5,0); P('whiteboard',10,-9,F_S+0.3); P('box',-9.3,9.6,0.3,0,1); P('bin',-6.5,-9.5,0,0,1);
+
+  // ----- nouveaux objets -----
+  // salon vitré
+  P('babyfoot',-3.4,-3.9,0); P('beanbag',3.3,-4.0,0.3,0,0); P('beanbag',4.4,-3.0,-0.4,0,2); P('aquarium',3.3,4.9,F_N); P('globe',-3.7,4.6); P('fan',-4.7,3.3,F_E);
+  // autour des cloisons
+  for(const z of [-10.1,-9.55,-9.0]) P('locker',-8.15,z,F_E,0,(-z*3)|0);
+  for(const z of [7.2,7.75,8.3]) P('locker',8.15,z,F_W,0,(z*3)|0);
+  for(const z of [-9.0,-8.45]) P('locker',-17.65,z,F_E,0,(-z*2)|0);
+  for(const z of [6.0,6.55]) P('locker',17.65,z,F_W,0,(z*2)|0);
+  for(const [x,z] of [[-8.5,-5.7],[8.5,-5.7],[-8.5,5.7],[8.5,5.7]]) P('palm',x,z,R()*6);
+  P('papers',-23,-0.05,0.1); P('safe',-13,-1.05,F_N,0,1); P('cart',13,0.05,0); P('beanbag',23,0.1,0.5,0,3);
+  P('cart',-20.5,-10.6,0); P('papers',-7,2.5,0.4); P('box',7,-2.5,0.2,0,2); P('box',7.1,-2.5,-0.1,0.45,1); P('fan',-27,-0.05,F_S);
+  P('box',3,-6.6,0.1,0,0); P('papers',-2,6.6,0); P('bin',4.6,6.6,0,0,2); P('box',-3,8.2,0.3,0,1);
+  // pièces
+  P('babyfoot',6,-16,F_E); P('safe',19.2,-19.55,F_S,0,0); P('globe',20.5,-13);
+  P('aquarium',4,19.6,F_N); P('globe',-7.5,19.4); P('palm',-8,13,1); P('palm',-12.7,14.6,2); P('cart',-14,13.2,0);
+  P('locker',8.35,16.0,F_E,0,1); P('locker',8.35,16.55,F_E,0,2); P('safe',16.8,19.0,F_N,0,1); P('papers',13.5,16.8,0.3);
+  P('fan',21.5,19.5,F_N);
 
   makeSign();
   // fusion de toute la géométrie statique (performances)
@@ -618,7 +711,7 @@ function raycast(o,d,maxT,opts={}){
   let best={t:maxT,kind:null};
   if(d.y<-1e-6){ const t=-o.y/d.y; if(t<best.t) best={t,kind:'wall'}; }
   else if(d.y>1e-6){ const t=(WALL_H-o.y)/d.y; if(t<best.t) best={t,kind:'wall'}; }
-  for(const b of boxes){ if(opts.wallsOnly&&b.kind!=='wall') continue; const t=rayAABB(o.x,o.y,o.z,d.x,d.y,d.z,b,best.t); if(t<best.t) best={t,kind:b.kind,prop:b.prop}; }
+  for(const b of boxes){ if(opts.wallsOnly&&b.kind!=='wall') continue; if(b.kind==='glass'&&!opts.glass) continue; const t=rayAABB(o.x,o.y,o.z,d.x,d.y,d.z,b,best.t); if(t<best.t) best={t,kind:b.kind,prop:b.prop}; }
   if(opts.ents) for(const e of opts.ents){ if(!e.alive||e.id===opts.exclude) continue; const t=rayEnt(o,d,e,best.t); if(t<best.t) best={t,kind:'ent',ent:e}; }
   best.p=new V3(o.x+d.x*best.t,o.y+d.y*best.t,o.z+d.z*best.t);
   return best;
@@ -661,7 +754,7 @@ function findPath(sx,sz,gx,gz){
   while(i<pts.length){ let j=Math.min(pts.length-1,i+40); while(j>i&&!gridLOS(a.x,a.z,pts[j].x,pts[j].z)) j--; out.push(pts[j]); a=pts[j]; i=j+1; }
   return out;
 }
-const PATROL=[[-24,-16],[-12,-16],[1,-16],[11,-16],[24,-16],[-21,16],[-2,14],[13,16],[24,15.8],[-20,0],[-8,-9],[8,-9],[-8,9],[8,9],[20,0],[0,-5],[0,5],[-26,-9],[26,-9],[-26,9],[26,9],[-13,-1],[13,-1]].map(([x,z])=>({x,z}));
+const PATROL=[[-24,-16],[-12,-16],[1,-16],[11,-16],[24,-16],[-21,16],[-2,14],[13,16],[24,15.8],[-20,0],[-7.2,-9],[7.2,-9],[-7.2,9],[7.2,9],[20,0],[0,-4],[0,4],[-4,0],[4,0],[-26,-9],[26,-9],[-26,9],[26,9],[-13,-2.2],[13,-2.2],[0,-6.5],[0,6.5],[-13,10],[13,-10]].map(([x,z])=>({x,z}));
 
 /* ============================================================
    AUDIO (sons synthétisés)
@@ -705,6 +798,8 @@ const TAUNTS=[
   (o,t)=>{ note(o,'sine',800,t,0.5,0.45,110); },
   (o,t)=>{ [392,392,523].forEach((f,i)=>note(o,'square',f,t+i*0.15,0.12,0.2)); note(o,'square',659,t+0.5,0.35,0.2); },
 ];
+function playShake(pos){ if(!AC) return; const t=AC.currentTime+Math.random()*0.15, o=outAt(pos), f=rand(520,900);
+  note(o,'triangle',f,t,0.12,0.22,f*1.5); note(o,'triangle',f*1.2,t+0.13,0.16,0.18,f*0.8); noise(o,t,0.25,0.12,1800,500); }
 function playTaunt(i,pos){ if(!AC) return; TAUNTS[i%TAUNTS.length](outAt(pos),AC.currentTime); }
 function audioListener(cam){
   if(!AC) return; const L=AC.listener, p=cam.position;
@@ -734,8 +829,36 @@ function updateFx(dt){
 }
 
 /* ---------- arme en vue subjective ---------- */
+/* ---------- skins du chasseur ---------- */
+const SKINS={
+  classic:{name:'Classique',body:0xc0392b,legs:0x2c3e50,belt:0xf1c40f,hat:0x1b2631,arms:0xc0392b,stock:DWOOD,metal:0x2d2f33,text:null},
+  six7:{name:'6-7',body:0x2f6fde,legs:0x173a7a,belt:0x9fd3ff,hat:0x173a7a,arms:0x2f6fde,stock:0x2f6fde,metal:0x173a7a,text:'6-7',fg:'#ffffff',bg:'#173a7a'},
+  prout:{name:'Prout',body:0x7a4a22,legs:0x4b2c12,belt:0xc08a4f,hat:0x4b2c12,arms:0x7a4a22,stock:0x7a4a22,metal:0x4b2c12,text:'PROUT',fg:'#f3dfbf',bg:'#4b2c12'},
+  hamra:{name:'HAMRA',body:0xd31a1a,legs:0x111111,belt:0x111111,hat:0x111111,arms:0x111111,stock:0xd31a1a,metal:0x111111,text:'HAMRA',fg:'#e01b1b',bg:'#111111'},
+};
+const skinOf=k=>SKINS[k]?k:'classic';
+const skinTexCache={};
+function skinTex(k){
+  if(skinTexCache[k]) return skinTexCache[k];
+  const s=SKINS[k], cv=document.createElement('canvas'); cv.width=256; cv.height=96; const ctx=cv.getContext('2d');
+  const tex=new THREE.CanvasTexture(cv); tex.colorSpace=THREE.SRGBColorSpace;
+  const draw=()=>{ ctx.fillStyle=s.bg; ctx.fillRect(0,0,256,96); ctx.fillStyle=s.fg; ctx.textAlign='center'; ctx.textBaseline='middle';
+    let fs=64; ctx.font=`${fs}px Bungee, Impact, sans-serif`; while(ctx.measureText(s.text).width>230&&fs>20){ fs-=4; ctx.font=`${fs}px Bungee, Impact, sans-serif`; }
+    ctx.fillText(s.text,128,52); tex.needsUpdate=true; };
+  draw(); if(document.fonts) document.fonts.load('64px Bungee').then(draw).catch(()=>{});
+  return skinTexCache[k]=tex;
+}
+
 const gun=new THREE.Group();
-bx(gun,0.07,0.1,0.42,0,-0.05,-0.2,0x2d2f33); bx(gun,0.08,0.075,0.22,0,-0.06,-0.47,DWOOD); bx(gun,0.06,0.09,0.22,0,-0.07,0.12,DWOOD);
+const gunMetalMat=new THREE.MeshLambertMaterial({color:0x2d2f33}), gunStockMat=new THREE.MeshLambertMaterial({color:DWOOD});
+bx(gun,0.07,0.1,0.42,0,-0.05,-0.2,0x2d2f33).material=gunMetalMat; bx(gun,0.08,0.075,0.22,0,-0.06,-0.47,DWOOD).material=gunStockMat; bx(gun,0.06,0.09,0.22,0,-0.07,0.12,DWOOD).material=gunStockMat;
+const gunDecal=new THREE.Mesh(new THREE.PlaneGeometry(0.26,0.0975),new THREE.MeshBasicMaterial({color:0xffffff}));
+gunDecal.position.set(-0.0365,0,-0.2); gunDecal.rotation.y=-Math.PI/2; gun.add(gunDecal);
+const gunDecal2=gunDecal.clone(); gunDecal2.position.set(0.0365,0,-0.2); gunDecal2.rotation.y=Math.PI/2; gun.add(gunDecal2);
+function applyGunSkin(k){
+  const s=SKINS[skinOf(k)]; gunMetalMat.color.setHex(s.metal); gunStockMat.color.setHex(s.stock);
+  gunDecal.visible=gunDecal2.visible=!!s.text; if(s.text){ gunDecal.material.map=skinTex(skinOf(k)); gunDecal.material.needsUpdate=true; }
+}
 bx(gun,0.05,0.12,0.06,0,-0.17,-0.02,0x1a1a1a); bx(gun,0.03,0.04,0.08,0,0.05,-0.15,0x111111); bx(gun,0.012,0.03,0.012,0,0.03,-0.6,0x111111);
 { const m=bx(gun,0.05,0.16,0.08,0,-0.21,-0.2,0x1a1a1a); m.rotation.x=0.2; const b=cy(gun,0.016,0.016,0.32,0,0,0,0x111111); b.rotation.x=Math.PI/2; b.position.set(0,0,-0.68);
   sp(gun,0.045,0.0,-0.13,-0.02,0xe0ac69); sp(gun,0.045,0,-0.08,-0.45,0xe0ac69); }
@@ -747,8 +870,8 @@ gun.scale.setScalar(0.8); vmScene.add(gun);
    ENTITÉS (joueurs & bots)
    ============================================================ */
 function makeEnt(p){
-  return {id:p.id,name:p.name,role:p.role,isBot:!!p.isBot,x:p.x||0,y:0,z:p.z||0,yaw:p.yaw||0,pitch:0,vx:0,vz:0,vy:0,onGround:true,
-    prop:null,hp:100,alive:true,speed:0,lx:p.x||0,lz:p.z||0,tauntT:rand(35,50),lockYaw:false,vis:null,visKey:'',ai:null,lastTaunt:0};
+  return {id:p.id,name:p.name,role:p.role,isBot:!!p.isBot,skin:skinOf(p.skin),x:p.x||0,y:0,z:p.z||0,yaw:p.yaw||0,pitch:0,vx:0,vz:0,vy:0,onGround:true,
+    prop:null,hp:100,alive:true,speed:0,lx:p.x||0,lz:p.z||0,shakeT:0,lockYaw:false,vis:null,visKey:'',ai:null,lastTaunt:0};
 }
 function nameTag(text,color){
   const cv=document.createElement('canvas'); cv.width=256; cv.height=64; const x=cv.getContext('2d');
@@ -757,16 +880,20 @@ function nameTag(text,color){
 }
 function buildEntVisual(e,viewerRole){
   const g=new THREE.Group();
-  if(e.role==='hunter'){
-    bx(g,0.18,0.82,0.22,-0.12,0,0,0x2c3e50); bx(g,0.18,0.82,0.22,0.12,0,0,0x2c3e50); bx(g,0.55,0.65,0.3,0,0.8,0,0xc0392b); bx(g,0.56,0.07,0.31,0,1.12,0,0xf1c40f);
-    sp(g,0.17,0,1.64,0,0xf1c27d); bx(g,0.36,0.09,0.36,0,1.74,0,0x1b2631); bx(g,0.3,0.03,0.18,0,1.74,-0.24,0x1b2631);
-    bx(g,0.12,0.12,0.5,-0.25,1.2,-0.2,0xc0392b); bx(g,0.12,0.12,0.5,0.25,1.2,-0.2,0xc0392b); bx(g,0.08,0.12,0.75,0.08,1.2,-0.55,0x222222);
+  if(e.role==='hunter'){ const s=SKINS[e.skin]||SKINS.classic;
+    bx(g,0.18,0.82,0.22,-0.12,0,0,s.legs); bx(g,0.18,0.82,0.22,0.12,0,0,s.legs); bx(g,0.55,0.65,0.3,0,0.8,0,s.body); bx(g,0.56,0.07,0.31,0,1.12,0,s.belt);
+    sp(g,0.17,0,1.64,0,0xf1c27d); bx(g,0.36,0.09,0.36,0,1.74,0,s.hat); bx(g,0.3,0.03,0.18,0,1.74,-0.24,s.hat);
+    bx(g,0.12,0.12,0.5,-0.25,1.2,-0.2,s.arms); bx(g,0.12,0.12,0.5,0.25,1.2,-0.2,s.arms); bx(g,0.08,0.12,0.75,0.08,1.2,-0.55,s.metal);
+    if(s.text){ const mat=new THREE.MeshBasicMaterial({map:skinTex(e.skin)});
+      const f=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.19),mat); f.position.set(0,1.0,-0.152); f.rotation.y=Math.PI; g.add(f);
+      const b=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.19),mat); b.position.set(0,1.0,0.152); g.add(b); }
   } else if(!e.prop){
     cy(g,0.25,0.3,0.6,0,0,0,0x3a86ff); sp(g,0.24,0,0.72,0,0x3a86ff); sp(g,0.07,-0.09,0.78,-0.19,0xffffff); sp(g,0.07,0.09,0.78,-0.19,0xffffff); sp(g,0.035,-0.09,0.78,-0.25,0x111111); sp(g,0.035,0.09,0.78,-0.25,0x111111);
   } else {
     const [t,vi]=e.prop.split(':'); const def=PROPS[t]; if(def) def.build(g,def.v[(+vi)%def.v.length],+vi);
   }
   if(viewerRole==='hider' && e.role==='hider'){ const tag=nameTag(e.name,'#8ec5ff'); tag.position.y=entDims(e).h+0.35; g.add(tag); }
+  if(viewerRole==='hunter' && e.role==='hunter'){ const tag=nameTag(e.name,'#ff9a9a'); tag.position.y=entDims(e).h+0.35; g.add(tag); }
   return g;
 }
 
@@ -774,7 +901,7 @@ function buildEntVisual(e,viewerRole){
    BOTS
    ============================================================ */
 let BOT_DECOR=[];
-function pickHideSpot(g,hunter,minHunterDist){
+function pickHideSpot(g,hunters,minHunterDist){
   for(let i=0;i<90;i++){
     const d=BOT_DECOR[(Math.random()*BOT_DECOR.length)|0], def=d.def;
     const a=Math.random()*Math.PI*2, rr=Math.max(def.w,def.d)/2+0.45+Math.random()*1.1;
@@ -782,7 +909,7 @@ function pickHideSpot(g,hunter,minHunterDist){
     if(!navWalk(x,z)) continue;
     if(!circleFree(x,z,clamp(Math.max(def.w,def.d)/2,0.18,0.55),0,def.h)) continue;
     if(Math.hypot(x-HUNTER_SPAWN.x,z-HUNTER_SPAWN.z)<4) continue;
-    if(hunter&&minHunterDist&&Math.hypot(x-hunter.x,z-hunter.z)<minHunterDist) continue;
+    if(minHunterDist&&hunters.some(h=>Math.hypot(x-h.x,z-h.z)<minHunterDist)) continue;
     if(g.taken.some(t=>Math.hypot(t.x-x,t.z-z)<1.3)) continue;
     const yaw=d.rot+(Math.random()<0.25?(Math.random()<0.5?Math.PI/2:-Math.PI/2):0)+rand(-0.12,0.12);
     const s={x,z,prop:d.type+':'+d.vi,yaw}; g.taken.push(s); return s;
@@ -804,12 +931,12 @@ function followPath(e,ai,speed,dt){
 function hiderBot(g,e,dt){
   const ai=e.ai||(e.ai={state:'seek',spot:null,path:null,timer:0,lastHp:e.hp,delay:rand(0,2.5)});
   if(ai.delay>0){ ai.delay-=dt; collideMove(e,0,0,dt); return; }
-  const hunter=g.hunter;
+  const hunter=g.hunters().filter(h=>h.alive);
   if(e.hp<ai.lastHp){ ai.lastHp=e.hp;
     if(ai.state!=='flee'&&Math.random()<0.75){ releaseSpot(g,ai); ai.state='flee'; ai.spot=pickHideSpot(g,hunter,12); ai.path=ai.spot?findPath(e.x,e.z,ai.spot.x,ai.spot.z):null; if(!ai.path){ releaseSpot(g,ai); ai.spot=null; ai.state='seek'; } } }
   if(ai.state==='hidden'){
     collideMove(e,0,0,dt); e.vx=e.vz=0;
-    if(g.phase==='hunt'){ ai.timer-=dt; if(ai.timer<=0){ const hd=hunter?Math.hypot(hunter.x-e.x,hunter.z-e.z):99;
+    if(g.phase==='hunt'){ ai.timer-=dt; if(ai.timer<=0){ const hd=hunter.reduce((m,h)=>Math.min(m,Math.hypot(h.x-e.x,h.z-e.z)),99);
       if(hd>12&&Math.random()<0.4){ ai.state='seek'; releaseSpot(g,ai); ai.spot=null; } else ai.timer=rand(25,60); } }
     return;
   }
@@ -839,6 +966,7 @@ function hunterBot(g,e,dt){
   if(ai.percT<=0){ ai.percT=0.2;
     for(const h of g.hiders()){ if(!h.alive) continue; const v=canSee(e,eye,h); if(!v.vis) continue;
       let rate; if(!h.prop) rate=4; else if(h.speed>0.7) rate=v.dist<15?2.5:0.8; else rate=v.dist<3.5?0.3:v.dist<7?0.09:v.dist<12?0.03:0.005;
+      if(h.shakeT>0) rate=Math.max(rate,v.dist<10?1.6:0.5);
       ai.susp[h.id]=(ai.susp[h.id]||0)+rate*0.2;
       if(ai.susp[h.id]>=1&&(!ai.tgt||ai.tgt.fake)){ ai.tgt={ent:h}; ai.react=0.35+Math.random()*0.35; ai.burst=3+((Math.random()*4)|0); } }
     for(const k in ai.susp) ai.susp[k]=Math.max(0,ai.susp[k]-0.004);
@@ -886,6 +1014,13 @@ function hearTaunt(g,src){
   for(const e of g.ents.values()){ if(!e.isBot||e.role!=='hunter'||!e.ai||e.ai.tgt) continue;
     if(Math.hypot(src.x-e.x,src.z-e.z)<32){ e.ai.goal={x:src.x+rand(-2,2),z:src.z+rand(-2,2)}; e.ai.path=null; e.ai.pause=0; e.ai.susp[src.id]=(e.ai.susp[src.id]||0)+0.3; } }
 }
+// tremblement : chaque chasseur bot libre se dirige vers le cacheur le plus proche qu'il a entendu
+function hearShake(g){
+  const hs=g.hiders().filter(h=>h.alive);
+  for(const e of g.ents.values()){ if(!e.isBot||e.role!=='hunter'||!e.alive||!e.ai||e.ai.tgt) continue;
+    let best=null, bd=22; for(const h of hs){ const d=Math.hypot(h.x-e.x,h.z-e.z); if(d<bd){ bd=d; best=h; } }
+    if(best){ e.ai.goal={x:best.x+rand(-2.5,2.5),z:best.z+rand(-2.5,2.5)}; e.ai.path=null; e.ai.pause=0; e.ai.susp[best.id]=(e.ai.susp[best.id]||0)+0.25; } }
+}
 function spawnSpots(n){
   const out=[]; let t=0;
   while(out.length<n&&t<3000){ t++; const x=rand(-6,6), z=Math.random()<0.5?rand(-11,-8.5):rand(-1,1)*0+rand(8.5,11);
@@ -893,10 +1028,24 @@ function spawnSpots(n){
   while(out.length<n) out.push({x:rand(-3,3),z:-9.5});
   return out;
 }
-function makeRoster(humans,hunterId,botHunter){
-  const players=[]; let hiders;
-  if(botHunter){ players.push({id:'bh',name:'Inspecteur Bot',role:'hunter',isBot:true,x:HUNTER_SPAWN.x,z:HUNTER_SPAWN.z,yaw:0}); hiders=humans.map(h=>({...h,role:'hider',isBot:false})); }
-  else { const hn=humans.find(h=>h.id===hunterId); players.push({...hn,role:'hunter',isBot:false,x:HUNTER_SPAWN.x,z:HUNTER_SPAWN.z,yaw:0}); hiders=humans.filter(h=>h.id!==hunterId).map(h=>({...h,role:'hider',isBot:false})); }
+// sels : choix pour chaque place de chasseur ('random', 'bot' ou id d'un joueur) -> ids (null = bot)
+function pickHunters(humans,sels){
+  const out=[];
+  for(const s of sels){
+    if(s==='bot'){ out.push(null); continue; }
+    if(s!=='random'&&humans.some(h=>h.id===s)&&!out.includes(s)){ out.push(s); continue; }
+    const free=humans.filter(h=>!out.includes(h.id));
+    const ok=free.length>1||(free.length===1&&humans.length===1&&out.length===0&&Math.random()<0.5);
+    out.push(ok?free[(Math.random()*free.length)|0].id:null);
+  }
+  return out;
+}
+function makeRoster(humans,hunterIds){
+  const players=[]; const botSkins=Object.keys(SKINS).sort(()=>Math.random()-0.5);
+  hunterIds.forEach((id,i)=>{ const sp=HUNTER_SPAWNS[i%HUNTER_SPAWNS.length]; const hn=id&&humans.find(h=>h.id===id);
+    if(hn) players.push({...hn,role:'hunter',isBot:false,x:sp.x,z:sp.z,yaw:0});
+    else players.push({id:'bh'+i,name:['Inspecteur Bot','Agent Bot'][i%2],role:'hunter',isBot:true,skin:botSkins[i%botSkins.length],x:sp.x,z:sp.z,yaw:0}); });
+  const hiders=humans.filter(h=>!hunterIds.includes(h.id)).map(h=>({...h,role:'hider',isBot:false}));
   const names=[...BOT_NAMES].sort(()=>Math.random()-0.5); let bi=0;
   while(hiders.length<NUM_HIDERS){ hiders.push({id:'b'+bi,name:'Bot '+names[bi%names.length],role:'hider',isBot:true}); bi++; }
   const spots=spawnSpots(hiders.length);
@@ -945,6 +1094,10 @@ function flashEl(id,ms=120){ const el=$(id); el.classList.add('on'); clearTimeou
 $('nameInput').value=store.get('gm_name')||('Joueur'+((Math.random()*900+100)|0));
 $('nameInput').addEventListener('change',()=>store.set('gm_name',myName()));
 $('sens').value=sens; $('sens').addEventListener('input',e=>{ sens=+e.target.value; store.set('gm_sens',sens); });
+let mySkin=skinOf(store.get('gm_skin'));
+function renderSkins(){ document.querySelectorAll('.skin').forEach(b=>b.classList.toggle('on',b.dataset.skin===mySkin)); }
+document.querySelectorAll('.skin').forEach(b=>b.addEventListener('click',()=>{ mySkin=skinOf(b.dataset.skin); store.set('gm_skin',mySkin); renderSkins(); }));
+renderSkins();
 document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{ document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); soloRole=c.dataset.role; }));
 $('btnPlay').addEventListener('click',()=>{ audioInit(); store.set('gm_name',myName()); startSolo(soloRole); });
 $('btnFriends').addEventListener('click',()=>{ $('friendsPanel').hidden=!$('friendsPanel').hidden; });
@@ -960,8 +1113,8 @@ $('btnAgain').addEventListener('click',()=>{ audioInit(); startSolo(soloRole); }
 $('btnMenu').addEventListener('click',()=>leaveToMenu());
 
 function startSolo(role){
-  const me={id:'h',name:myName()}; const r=role==='random'?(Math.random()<0.5?'hunter':'hider'):role;
-  const players=r==='hunter'?makeRoster([me],'h',false):makeRoster([me],null,true);
+  const me={id:'h',name:myName(),skin:mySkin}; const r=role==='random'?(Math.random()<0.5?'hunter':'hider'):role;
+  const players=makeRoster([me],r==='hunter'?['h',null]:[null,null]);
   startGame({auth:true,solo:true,myId:'h',players});
 }
 function startGame(o){
@@ -990,7 +1143,7 @@ function hostCreate(tries=0){
   if(noPeer()) return;
   setStatus('Création de la partie…');
   const code=genCode(); const peer=new Peer(PEER_PREFIX+code,{debug:1});
-  peer.on('open',()=>{ net={isHost:true,peer,code,conns:new Map(),players:[{id:'h',name:myName()}],nextId:1,inGame:false,myId:'h'}; setStatus(''); mode='lobby'; showScreen('lobby'); renderLobby(); });
+  peer.on('open',()=>{ net={isHost:true,peer,code,conns:new Map(),players:[{id:'h',name:myName(),skin:mySkin}],nextId:1,inGame:false,myId:'h'}; setStatus(''); mode='lobby'; showScreen('lobby'); renderLobby(); });
   peer.on('connection',conn=>{ conn.on('data',d=>hostOnData(conn,d)); conn.on('close',()=>hostOnClose(conn)); conn.on('error',()=>hostOnClose(conn)); });
   peer.on('error',err=>{
     if(err.type==='unavailable-id'&&tries<5){ peer.destroy(); hostCreate(tries+1); return; }
@@ -1003,7 +1156,7 @@ function hostOnData(conn,d){
   if(d.t==='join'){
     if(conn.gid) return;
     if(net.players.length>=MAX_PLAYERS){ conn.send({t:'full'}); setTimeout(()=>conn.close(),500); return; }
-    const id='p'+(net.nextId++); conn.gid=id; net.conns.set(id,conn); net.players.push({id,name:String(d.name||'Joueur').slice(0,14)});
+    const id='p'+(net.nextId++); conn.gid=id; net.conns.set(id,conn); net.players.push({id,name:String(d.name||'Joueur').slice(0,14),skin:skinOf(d.skin)});
     conn.send({t:'welcome',id,code:net.code}); lobbyBroadcast(); return;
   }
   if(!conn.gid||!game) return;
@@ -1021,17 +1174,18 @@ function renderLobby(){
   if(!net) return;
   $('lobbyCode').textContent=net.code;
   const ul=$('playerList'); ul.innerHTML='';
-  net.players.forEach((p,i)=>{ const li=document.createElement('li'); li.textContent=p.name+(p.id===net.myId?' (toi)':''); const s=document.createElement('span'); s.textContent=i===0?'👑 Hôte':'Joueur'; li.appendChild(s); ul.appendChild(li); });
+  net.players.forEach((p,i)=>{ const li=document.createElement('li'); li.textContent=p.name+(p.id===net.myId?' (toi)':''); const s=document.createElement('span'); s.textContent=(i===0?'👑 Hôte':'Joueur')+' · skin '+SKINS[skinOf(p.skin)].name; li.appendChild(s); ul.appendChild(li); });
   for(let i=net.players.length;i<MAX_PLAYERS;i++){ const li=document.createElement('li'); li.className='bot'; li.textContent='Bot'; ul.appendChild(li); }
   $('hostCtl').hidden=!net.isHost; $('lobbyWait').hidden=net.isHost;
   $('lobbyWait').textContent=net.inGame?'Une manche est en cours : tu joueras à la prochaine.':'En attente du lancement par l’hôte…';
-  if(net.isHost){ const sel=$('hunterSel'), cur=sel.value; sel.innerHTML='<option value="random">Au hasard</option>'+net.players.map(p=>`<option value="${p.id}">${p.name.replace(/</g,'&lt;')}</option>`).join(''); if([...sel.options].some(o=>o.value===cur)) sel.value=cur; }
+  if(net.isHost) for(const id of ['hunterSel','hunterSel2']){ const sel=$(id), cur=sel.value||'random';
+    sel.innerHTML='<option value="random">Au hasard</option><option value="bot">Un bot</option>'+net.players.map(p=>`<option value="${p.id}">${p.name.replace(/</g,'&lt;')}</option>`).join('');
+    sel.value=[...sel.options].some(o=>o.value===cur)?cur:'random'; }
 }
 function hostStart(){
   if(!net||!net.isHost) return; audioInit();
-  const humans=net.players.map(p=>({id:p.id,name:p.name}));
-  let hid=$('hunterSel').value; if(hid==='random'||!humans.some(h=>h.id===hid)) hid=humans[(Math.random()*humans.length)|0].id;
-  const players=makeRoster(humans,hid,false); net.inGame=true;
+  const humans=net.players.map(p=>({id:p.id,name:p.name,skin:skinOf(p.skin)}));
+  const players=makeRoster(humans,pickHunters(humans,[$('hunterSel').value,$('hunterSel2').value])); net.inGame=true;
   for(const c of net.conns.values()) if(c.open) c.send({t:'start',players,hide:HIDE_TIME,hunt:HUNT_TIME});
   startGame({auth:true,myId:'h',players,hide:HIDE_TIME,hunt:HUNT_TIME});
   lobbyBroadcast();
@@ -1044,7 +1198,7 @@ function clientJoin(raw){
   const to=setTimeout(()=>{ if(!opened){ setStatus('Impossible de rejoindre : code introuvable ou hôte injoignable.'); try{ peer.destroy(); }catch(e){} } },15000);
   peer.on('open',()=>{
     const conn=peer.connect(PEER_PREFIX+code,{reliable:true,serialization:'json'});
-    conn.on('open',()=>{ opened=true; clearTimeout(to); net={isHost:false,peer,conn,code,players:[],myId:null,inGame:false,send:m=>{ if(conn.open) try{ conn.send(m); }catch(e){} }}; conn.send({t:'join',name:myName()}); });
+    conn.on('open',()=>{ opened=true; clearTimeout(to); net={isHost:false,peer,conn,code,players:[],myId:null,inGame:false,send:m=>{ if(conn.open) try{ conn.send(m); }catch(e){} }}; conn.send({t:'join',name:myName(),skin:mySkin}); });
     conn.on('data',clientOnData);
     conn.on('close',()=>{ if(net&&net.conn===conn) leaveToMenu('La connexion avec l’hôte a été perdue.'); });
   });
@@ -1058,7 +1212,7 @@ function clientOnData(d){
   switch(d.t){
     case 'welcome': net.myId=d.id; setStatus(''); mode='lobby'; showScreen('lobby'); renderLobby(); break;
     case 'lobby': net.players=d.players; net.inGame=d.inGame; if(mode==='lobby') renderLobby(); break;
-    case 'full': leaveToMenu('La partie est pleine (11 joueurs maximum).'); break;
+    case 'full': leaveToMenu('La partie est pleine (12 joueurs maximum).'); break;
     case 'start': if(d.players.some(p=>p.id===net.myId)) startGame({auth:false,myId:net.myId,players:d.players,hide:d.hide,hunt:d.hunt}); break;
     case 's': if(game) game.applySnap(d); break;
     case 'lobbyback': net.inGame=false; endGameToLobby(); break;
@@ -1077,15 +1231,16 @@ class Game{
     this.phase='hide'; this.time=o.hide??HIDE_TIME; this.huntTime=o.hunt??HUNT_TIME;
     this.cam={yaw:this.me.yaw,pitch:-0.12,sx:0,sy:2,sz:0};
     this.ammo=MAG; this.reloadT=0; this.fireCD=0; this.kick=0; this.flash=0; this.bob=0; this.tauntCD=0;
-    this.netT=0; this.hudT=0; this.lastHp=100; this.target=null; this.feed=[]; this.taken=[]; this.deadHandled=false; this.finished=false;
+    this.netT=0; this.hudT=0; this.lastHp=100; this.target=null; this.feed=[]; this.taken=[]; this.deadHandled=false; this.finished=false; this.shakeN=0;
+    applyGunSkin(this.me.skin);
     this.outline=new THREE.Box3Helper(new THREE.Box3(),0xffd166); this.outline.visible=false; scene.add(this.outline);
     gun.visible=true;
     $('endScreen').hidden=true; $('board').hidden=true; $('killfeed').innerHTML='';
     setTimeout(()=>{ if(game!==this) return;
-      if(this.me.role==='hunter') announce('Tu es le CHASSEUR ! Attends que les cacheurs se cachent…',3500);
+      if(this.me.role==='hunter'){ const mate=this.hunters().find(h=>h!==this.me); announce(`Tu es CHASSEUR avec ${mate?mate.name:'un coéquipier'} ! Attends que les cacheurs se cachent…`,3500); }
       else announce('Tu es CACHEUR ! Vise un objet et appuie sur E pour te transformer.',4000); },200);
   }
-  get hunter(){ for(const e of this.ents.values()) if(e.role==='hunter') return e; return null; }
+  hunters(){ const a=[]; for(const e of this.ents.values()) if(e.role==='hunter') a.push(e); return a; }
   hiders(){ const a=[]; for(const e of this.ents.values()) if(e.role==='hider') a.push(e); return a; }
   destroy(){
     for(const e of this.ents.values()) if(e.vis) scene.remove(e.vis);
@@ -1098,8 +1253,8 @@ class Game{
     this.updateLocal(dt);
     if(this.auth){
       for(const e of this.ents.values()) if(e.isBot&&e.alive){ if(e.role==='hider') hiderBot(this,e,dt); else hunterBot(this,e,dt); }
-      if(this.phase==='hunt') for(const e of this.ents.values()){ if(e.role!=='hider'||!e.alive) continue; e.tauntT-=dt; if(e.tauntT<=0){ e.tauntT=rand(40,50); this.doTaunt(e,(Math.random()*TAUNTS.length)|0); } }
     }
+    for(const e of this.ents.values()) if(e.shakeT>0) e.shakeT-=dt;
     for(const e of this.ents.values()){ const inst=Math.hypot(e.x-e.lx,e.z-e.lz)/Math.max(dt,1e-3); e.speed+=(inst-e.speed)*Math.min(1,dt*5); e.lx=e.x; e.lz=e.z; }
     this.updateVisuals(dt); this.updateCamera(); this.updateTarget(); updateFx(dt); this.updateVM(dt);
     audioListener(camera);
@@ -1107,8 +1262,9 @@ class Game{
     this.hudT-=dt; if(this.hudT<=0){ this.hudT=0.1; this.updateHUD(); }
   }
   phaseLogic(){
-    if(this.phase==='hide'&&this.time<=0){ this.phase='hunt'; this.time=this.huntTime; for(const h of this.hiders()) h.tauntT=rand(35,50); this.emit({t:'ann',m:'🔫 Le chasseur est lâché !'}); }
+    if(this.phase==='hide'&&this.time<=0){ this.phase='hunt'; this.time=this.huntTime; this.shakeN=0; this.emit({t:'ann',m:'🔫 Les chasseurs sont lâchés !'}); }
     else if(this.phase==='hunt'&&this.time<=0) this.end('hiders','Temps écoulé : les cacheurs ont survécu !');
+    else if(this.phase==='hunt'){ const n=Math.floor((this.huntTime-this.time)/SHAKE_EVERY); if(n>this.shakeN){ this.shakeN=n; this.emit({t:'shake'}); hearShake(this); } }
     else if(this.phase==='end'&&this.time<=0&&!this.finished){ this.finished=true;
       if(!this.solo&&net&&net.isHost){ net.inGame=false; netBroadcast({t:'lobbyback'}); endGameToLobby(); lobbyBroadcast(); } }
   }
@@ -1132,11 +1288,15 @@ class Game{
       } break;
       case 'left': { const v=this.ents.get(m.id); if(v){ v.alive=false; this.addFeed(`🚪 ${v.name} a quitté la partie`); } } break;
       case 'taunt': playTaunt(m.s,{x:m.x,y:m.y,z:m.z}); break;
+      case 'shake': {
+        for(const h of this.hiders()){ if(!h.alive) continue; h.shakeT=1; const p=h.vis?h.vis.position:h; playShake({x:p.x,y:p.y+0.4,z:p.z}); }
+        announce(this.me.role==='hider'?'〰️ Tu trembles ! Les chasseurs t’entendent…':'〰️ Les cacheurs tremblent : écoute bien !',1800);
+      } break;
       case 'ann': announce(m.m); if(this.me.role==='hunter') S.beep(660); break;
       case 'end': {
         this.phase='end'; this.time=END_TIME; if(document.pointerLockElement) document.exitPointerLock(); $('pause').hidden=true;
         const meWon=(m.w==='hunter')===(this.me.role==='hunter');
-        $('endTitle').textContent=m.w==='hunter'?'LE CHASSEUR GAGNE !':'LES CACHEURS GAGNENT !'; $('endTitle').className=m.w==='hunter'?'hunter':'hiders';
+        $('endTitle').textContent=m.w==='hunter'?'LES CHASSEURS GAGNENT !':'LES CACHEURS GAGNENT !'; $('endTitle').className=m.w==='hunter'?'hunter':'hiders';
         $('endReason').textContent=m.r+(meWon?' Bravo, tu as gagné ! 🎉':' Tu as perdu cette fois…');
         $('endSurv').textContent=m.s&&m.s.length?'Survivants : '+m.s.join(', '):'Aucun survivant.';
         $('endSolo').hidden=!this.solo; $('endMulti').hidden=this.solo; $('endScreen').hidden=false;
@@ -1151,8 +1311,8 @@ class Game{
     t.hp=0; t.alive=false; this.emit({t:'kill',k:by?by.id:null,v:t.id,p:t.prop||''}); this.checkWin();
   }
   checkWin(){
-    if(this.phase==='end') return; const h=this.hunter;
-    if(!h||!h.alive) return this.end('hiders',h&&h.hp<=0?'Le chasseur a trop tiré dans les meubles !':'Le chasseur a quitté la partie.');
+    if(this.phase==='end') return; const hs=this.hunters();
+    if(!hs.some(h=>h.alive)) return this.end('hiders',hs.some(h=>h.hp<=0)?'Les chasseurs ont trop tiré dans les meubles !':'Les chasseurs ont quitté la partie.');
     if(this.hiders().every(x=>!x.alive)) this.end('hunter','Tous les cacheurs ont été trouvés !');
   }
   applyFire(id,msg){
@@ -1239,6 +1399,8 @@ class Game{
       const direct=e===this.me||(this.auth&&e.isBot); const p=e.vis.position;
       if(direct||Math.hypot(p.x-e.x,p.z-e.z)>4){ p.set(e.x,e.y,e.z); e.vis.rotation.y=e.yaw; }
       else { p.x+=(e.x-p.x)*k; p.y+=(e.y-p.y)*k; p.z+=(e.z-p.z)*k; e.vis.rotation.y+=wrapAngle(e.yaw-e.vis.rotation.y)*k; }
+      if(e.shakeT>0&&e.alive){ const a=performance.now()*0.001*38; e.vis.rotation.x=Math.sin(a*1.3)*0.08; e.vis.rotation.z=Math.cos(a*1.7)*0.08; }
+      else if(e.vis.rotation.x||e.vis.rotation.z){ e.vis.rotation.x=0; e.vis.rotation.z=0; }
       e.vis.visible=!(e===this.me&&e.role==='hunter');
     }
   }
@@ -1247,7 +1409,7 @@ class Game{
     if(!me.alive){ camera.position.set(c.sx,c.sy,c.sz); camera.rotation.set(c.pitch,c.yaw,0,'YXZ'); return; }
     if(me.role==='hunter'){ camera.position.set(me.x,me.y+1.62,me.z); camera.rotation.set(c.pitch,c.yaw,0,'YXZ'); return; }
     const d=entDims(me), tgt=new V3(me.x,me.y+d.h*0.7+0.35,me.z), f=fwd(c.yaw,c.pitch);
-    let dist=2.3+d.h*1.1; const hit=raycast(tgt,f.clone().negate(),dist+0.3); dist=Math.max(0.3,Math.min(dist,hit.t-0.25));
+    let dist=2.3+d.h*1.1; const hit=raycast(tgt,f.clone().negate(),dist+0.3,{glass:true}); dist=Math.max(0.3,Math.min(dist,hit.t-0.25));
     camera.position.copy(tgt).addScaledVector(f,-dist); camera.rotation.set(c.pitch,c.yaw,0,'YXZ');
   }
   updateTarget(){
@@ -1275,6 +1437,8 @@ class Game{
     const me=this.me;
     $('phase').textContent=this.phase==='hide'?'CACHEZ-VOUS !':this.phase==='hunt'?'CHASSE EN COURS':'FIN DE LA MANCHE';
     const t=Math.max(0,Math.ceil(this.time)); $('timer').textContent=`${(t/60)|0}:${String(t%60).padStart(2,'0')}`;
+    let sk=''; if(this.phase==='hunt'){ const next=SHAKE_EVERY-((this.huntTime-this.time)%SHAKE_EVERY); if(next<this.time) sk=`〰️ Tremblement dans ${Math.ceil(next)} s`; }
+    $('shakeT').textContent=sk;
     const rb=$('roleBadge'); rb.textContent=me.role==='hunter'?'CHASSEUR':'CACHEUR'; rb.className=me.role;
     const hs=this.hiders(); $('hidersLeft').textContent=`📦 Cacheurs : ${hs.filter(h=>h.alive).length} / ${hs.length}`;
     $('hptext').textContent=Math.max(0,Math.round(me.hp)); $('hpbar').firstElementChild.style.width=clamp(me.hp,0,100)+'%';
@@ -1308,7 +1472,7 @@ function loop(now){
 function frame(dt){
   let vm=false;
   if(mode==='game'&&game){ game.update(dt); vm=gun.visible; }
-  else { menuT+=dt; camera.position.set(Math.sin(menuT*0.05)*2.5,1.8,Math.cos(menuT*0.05)*2.5-6); camera.rotation.set(-0.08,menuT*0.07,0,'YXZ'); }
+  else { menuT+=dt; camera.position.set(Math.sin(menuT*0.05)*1.2,2.0,Math.cos(menuT*0.05)*1.2); camera.rotation.set(-0.12,menuT*0.07,0,'YXZ'); }
   renderer.clear(); renderer.render(scene,camera);
   if(vm){ renderer.clearDepth(); renderer.render(vmScene,vmCam); }
 }
